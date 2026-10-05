@@ -1,0 +1,30 @@
+# 每次 push 和 PR 都跑：lint → 格式检查 → 类型检查 → 测试。
+# 第 4 周会在这里加评估（cassette 回放）这一步。
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+
+      # --locked：uv.lock 和 pyproject 对不上就直接失败，保证 CI 和本地装的是同一套版本
+      - run: uv sync --locked
+
+      - run: uv run ruff check .
+      - run: uv run ruff format --check .
+      - run: uv run mypy app tests
+      # ubuntu-latest 自带 Docker，testcontainers 测试在这里能直接跑
+      - run: uv run pytest -q

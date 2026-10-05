@@ -1,0 +1,31 @@
+# git commit 前自动跑的检查，和 CI 是同一批规则，问题在本地就被拦下。
+# 安装钩子：cd backend && uv run pre-commit install --config ../.pre-commit-config.yaml
+# 手动全量跑：uv run pre-commit run --all-files --config ../.pre-commit-config.yaml
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-added-large-files
+      - id: detect-private-key        # 防止把密钥提交上去
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.16.10
+    hooks:
+      - id: ruff-check
+        args: [--fix]
+        files: ^backend/
+      - id: ruff-format
+        files: ^backend/
+
+  # mypy 用项目自己的虚拟环境跑，这样能看到你装的所有依赖的类型
+  - repo: local
+    hooks:
+      - id: mypy
+        name: mypy
+        entry: uv run --directory backend mypy app tests
+        language: system
+        pass_filenames: false
+        files: ^backend/.*\.py$

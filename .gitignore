@@ -1,0 +1,45 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+.coverage
+coverage.xml
+htmlcov/
+*.egg-info/
+dist/
+build/
+
+# Node / Next.js（第 4 周）
+node_modules/
+.next/
+out/
+*.tsbuildinfo
+next-env.d.ts
+
+# 密钥：.env 和私钥永远不进仓库
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# 压测报告（第 5 周，Locust 生成；要放进 README 的图单独挪到 docs/）
+loadtest/reports/
+
+# 日志
+*.log
+
+# 本机专用的 compose 覆盖配置
+docker-compose.override.yml
+
+# 编辑器 / 系统
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Claude 本地设置（项目共享的 .claude/skills 要提交）
+.claude/settings.local.json

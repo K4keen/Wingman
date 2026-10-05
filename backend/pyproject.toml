@@ -1,0 +1,48 @@
+# 后端项目的唯一配置入口：依赖、lint、类型检查、测试都在这里。
+# 运行时依赖（fastapi、sqlalchemy、arq……）故意留空，等你写到哪一步再 `uv add` 哪个，
+# 这样你清楚每个依赖是为什么引入的。
+
+[project]
+name = "wingman-backend"
+version = "0.1.0"
+requires-python = ">=3.12"
+dependencies = []
+
+# ---------- ruff：lint + 格式化（替代 flake8 + isort + black）----------
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = [
+    "E", "W",   # pycodestyle 基础风格
+    "F",        # pyflakes：未使用变量、未定义名字
+    "I",        # import 排序
+    "B",        # bugbear：常见坑，比如可变默认参数
+    "UP",       # 自动升级到新语法
+    "ASYNC",    # async 代码里误用阻塞调用（这个项目很重要）
+    "RUF",      # ruff 自带规则
+]
+# 允许中文注释和字符串里的全角标点
+ignore = ["RUF001", "RUF002", "RUF003"]
+
+# ---------- mypy：严格类型检查 ----------
+[tool.mypy]
+python_version = "3.12"
+strict = true
+# 以后装了 pydantic 再在这里加：plugins = ["pydantic.mypy"]
+
+# ---------- pytest ----------
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]          # 让测试能 `import app`
+asyncio_mode = "auto"       # async def test_xxx 不用再手动加装饰器
+
+[dependency-groups]
+dev = [
+    "mypy>=2.4.0",
+    "pre-commit>=4.6.2",
+    "pytest>=9.1.1",
+    "pytest-asyncio>=1.4.0",
+    "ruff>=0.16.10",
+]
