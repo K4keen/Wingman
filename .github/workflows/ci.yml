@@ -10,6 +10,29 @@ on:
 jobs:
   backend:
     runs-on: ubuntu-latest
+
+    # CI 里没有 .env，Settings 需要的值从这里给。都是一次性测试值，不是真密钥。
+    env:
+      DATABASE_URL: postgresql+asyncpg://wingman:wingman_ci@localhost:5432/wingman
+      REDIS_URL: redis://localhost:6379/0
+      JWT_SECRET: ci-only-not-a-secret
+
+    # 和本地 docker-compose 一样的 Postgres，跑在 job 旁边，通过 localhost:5432 访问
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: wingman
+          POSTGRES_PASSWORD: wingman_ci
+          POSTGRES_DB: wingman
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U wingman"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
+
     defaults:
       run:
         working-directory: backend
